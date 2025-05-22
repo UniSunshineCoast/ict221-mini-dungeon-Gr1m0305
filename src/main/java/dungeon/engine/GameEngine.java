@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class GameEngine {
 
-    private Cell[][] map;
-    private int size;
-    private Random random = new Random();
+    private final Cell[][] map;
+    private final int size;
+    private final Random random = new Random();
 
     /**
      * Predefined wall positions for the maze.
@@ -56,6 +56,10 @@ public class GameEngine {
 
         // Place 5 gold pieces at random locations
         placeRandomGold();
+
+        // Place 3 mutants at random positions (avoiding walls, ladder, gold, traps, and entry)
+        placeRandomMutants();
+
     }
 
     /**
@@ -115,6 +119,28 @@ public class GameEngine {
     }
 
     /**
+     * Places 3 mutants in random positions on the grid, avoiding walls, traps, ladder, gold, and entry.
+     */
+    private void placeRandomMutants() {
+        int mutantsPlaced = 0;
+
+        while (mutantsPlaced < 3) {
+            int mutantX = random.nextInt(size);
+            int mutantY = random.nextInt(size);
+
+            // Ensure the mutant doesn't spawn on entry, walls, traps, ladder, or gold
+            if (!isWall(mutantX, mutantY) && !isTrap(mutantX, mutantY) &&
+                    !isLadder(mutantX, mutantY) && !isGold(mutantX, mutantY) &&
+                    !isEntry(mutantX, mutantY)) {
+
+                map[mutantX][mutantY].setStyle("-fx-background-color: rgb(0, 200, 0)"); // Green color
+                map[mutantX][mutantY].getChildren().add(new Text("m")); // Mutant symbol
+                mutantsPlaced++;
+            }
+        }
+    }
+
+    /**
      * Checks if the given position contains a wall.
      */
     private boolean isWall(int x, int y) {
@@ -146,6 +172,14 @@ public class GameEngine {
     private boolean isEntry(int x, int y) {
         return (x == size-1 && y == 0);
     }
+
+    /**
+     * Checks if the given position contains a gold.
+     */
+    private boolean isGold(int x, int y) {
+        return containsSymbol(x, y, "G");
+    }
+
 
     /**
      * Helper method to check for a symbol at a given position.
