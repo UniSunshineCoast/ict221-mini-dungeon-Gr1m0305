@@ -35,7 +35,7 @@ public class GameEngine {
             for (int j = 0; j < size; j++) {
                 Cell cell = new Cell();
                 Text text = new Text(i + "," + j);
-                text.setOpacity(0); // Hide coordinates
+                text.setOpacity(0);
                 cell.getChildren().add(text);
                 map[i][j] = cell;
             }
@@ -57,8 +57,11 @@ public class GameEngine {
         // Place 5 gold pieces at random locations
         placeRandomGold();
 
-        // Place 3 mutants at random positions (avoiding walls, ladder, gold, traps, and entry)
+        // Place 3 mutants at random locations
         placeRandomMutants();
+
+        // Place 2 health potions at random positions
+        placeRandomHealthPotions();
 
     }
 
@@ -72,12 +75,12 @@ public class GameEngine {
             ladderX = random.nextInt(size);
             ladderY = random.nextInt(size);
         } while (
-                ladderX == size-1 && ladderY == 0 || // Avoid Entry
-                        isWall(ladderX, ladderY) // Avoid Walls
+                ladderX == size-1 && ladderY == 0 ||
+                        isWall(ladderX, ladderY)
         );
 
-        map[ladderX][ladderY].setStyle("-fx-background-color: rgb(255,111,0)"); // Ladder color
-        map[ladderX][ladderY].getChildren().add(new Text("L")); // Ladder symbol
+        map[ladderX][ladderY].setStyle("-fx-background-color: rgb(255,111,0)");
+        map[ladderX][ladderY].getChildren().add(new Text("L"));
     }
 
     /**
@@ -92,8 +95,8 @@ public class GameEngine {
 
             // Ensure the trap doesn't spawn on entry, walls, or ladder
             if ((trapX != size - 1 || trapY != 0) && !isWall(trapX, trapY) && !isLadder(trapX, trapY)) {
-                map[trapX][trapY].setStyle("-fx-background-color: rgb(255, 0, 0)"); // Red color
-                map[trapX][trapY].getChildren().add(new Text("T")); // Trap symbol
+                map[trapX][trapY].setStyle("-fx-background-color: rgb(255, 0, 0)");
+                map[trapX][trapY].getChildren().add(new Text("T"));
                 trapsPlaced++;
             }
         }
@@ -133,9 +136,31 @@ public class GameEngine {
                     !isLadder(mutantX, mutantY) && !isGold(mutantX, mutantY) &&
                     !isEntry(mutantX, mutantY)) {
 
-                map[mutantX][mutantY].setStyle("-fx-background-color: rgb(0, 200, 0)"); // Green color
-                map[mutantX][mutantY].getChildren().add(new Text("m")); // Mutant symbol
+                map[mutantX][mutantY].setStyle("-fx-background-color: rgb(0, 200, 0)");
+                map[mutantX][mutantY].getChildren().add(new Text("m"));
                 mutantsPlaced++;
+            }
+        }
+    }
+
+    /**
+     * Places 2 health potions in random positions on the grid, avoiding all other objects.
+     */
+    private void placeRandomHealthPotions() {
+        int potionsPlaced = 0;
+
+        while (potionsPlaced < 2) {
+            int potionX = random.nextInt(size);
+            int potionY = random.nextInt(size);
+
+            // Ensure health potions don’t overlap any other object
+            if (!isWall(potionX, potionY) && !isTrap(potionX, potionY) &&
+                    !isLadder(potionX, potionY) && !isGold(potionX, potionY) &&
+                    !isMutant(potionX, potionY) && !isEntry(potionX, potionY)) {
+
+                map[potionX][potionY].setStyle("-fx-background-color: rgb(255, 105, 180)");
+                map[potionX][potionY].getChildren().add(new Text("H"));
+                potionsPlaced++;
             }
         }
     }
@@ -180,9 +205,15 @@ public class GameEngine {
         return containsSymbol(x, y, "G");
     }
 
+    /**
+     * Checks if the given position contains a melee mutant.
+     */
+    private boolean isMutant(int x, int y) {
+        return containsSymbol(x, y, "m");
+    }
 
     /**
-     * Helper method to check for a symbol at a given position.
+     * Method to check for a symbol at a given position.
      */
     private boolean containsSymbol(int x, int y, String symbol) {
         return map[x][y].getChildren().stream()
@@ -196,7 +227,7 @@ public class GameEngine {
         for (int[] pos : wallPositions) {
             int x = pos[0];
             int y = pos[1];
-            map[x][y].getChildren().add(new Text("#")); // Wall symbol
+            map[x][y].getChildren().add(new Text("#"));
         }
     }
 
