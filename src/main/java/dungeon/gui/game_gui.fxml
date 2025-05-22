@@ -3,13 +3,13 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dungeon.gui.Controller">
+<BorderPane prefHeight="800" prefWidth="800" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dungeon.gui.Controller">
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
     </padding>
 
     <center>
-        <GridPane fx:id="gridPane" prefHeight="400.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+        <GridPane fx:id="gridPane" prefHeight="400" prefWidth="400" BorderPane.alignment="CENTER">
 
         </GridPane>
     </center>
