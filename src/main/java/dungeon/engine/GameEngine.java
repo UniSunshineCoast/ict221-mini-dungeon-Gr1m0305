@@ -48,15 +48,18 @@ public class GameEngine {
         // Generate walls for a structured maze
         generateWalls();
 
-        // Place Ladder at a random location (ensuring it doesn't overlap a wall)
+        // Place Ladder at a random location
         placeRandomLadder();
 
-        // Place 5 traps at random locations (avoiding walls and the ladder)
+        // Place 5 traps at random locations
         placeRandomTraps();
+
+        // Place 5 gold pieces at random locations
+        placeRandomGold();
     }
 
     /**
-     * Places the ladder at a random position on the grid, avoiding walls and traps.
+     * Places the ladder at a random position on the grid, avoiding walls.
      */
     private void placeRandomLadder() {
         int ladderX, ladderY;
@@ -66,20 +69,11 @@ public class GameEngine {
             ladderY = random.nextInt(size);
         } while (
                 ladderX == size-1 && ladderY == 0 || // Avoid Entry
-                        isWall(ladderX, ladderY) ||          // Avoid Walls
-                        isTrap(ladderX, ladderY)             // Avoid Traps
+                        isWall(ladderX, ladderY) // Avoid Walls
         );
 
         map[ladderX][ladderY].setStyle("-fx-background-color: rgb(255,111,0)"); // Ladder color
         map[ladderX][ladderY].getChildren().add(new Text("L")); // Ladder symbol
-    }
-
-    /**
-     * Checks if the given position contains a trap.
-     */
-    private boolean isTrap(int x, int y) {
-        return map[x][y].getChildren().stream()
-                .anyMatch(node -> node instanceof Text && ((Text) node).getText().equals("T"));
     }
 
     /**
@@ -102,6 +96,25 @@ public class GameEngine {
     }
 
     /**
+     * Places 5 gold pieces in random positions on the grid, avoiding walls, traps, ladder, and entry.
+     */
+    private void placeRandomGold() {
+        int goldPlaced = 0;
+
+        while (goldPlaced < 5) {
+            int goldX = random.nextInt(size);
+            int goldY = random.nextInt(size);
+
+            // Ensure the gold doesn't spawn on entry, walls, traps, or ladder
+            if (!isWall(goldX, goldY) && !isTrap(goldX, goldY) && !isLadder(goldX, goldY) && !isEntry(goldX, goldY)) {
+                map[goldX][goldY].setStyle("-fx-background-color: rgb(255, 223, 0)");
+                map[goldX][goldY].getChildren().add(new Text("G"));
+                goldPlaced++;
+            }
+        }
+    }
+
+    /**
      * Checks if the given position contains a wall.
      */
     private boolean isWall(int x, int y) {
@@ -114,11 +127,32 @@ public class GameEngine {
     }
 
     /**
+     * Checks if the given position contains a trap.
+     */
+    private boolean isTrap(int x, int y) {
+        return containsSymbol(x, y, "T");
+    }
+
+    /**
      * Checks if the given position contains the ladder.
      */
     private boolean isLadder(int x, int y) {
+        return containsSymbol(x, y, "L");
+    }
+
+    /**
+     * Checks if the given position contains the entry point.
+     */
+    private boolean isEntry(int x, int y) {
+        return (x == size-1 && y == 0);
+    }
+
+    /**
+     * Helper method to check for a symbol at a given position.
+     */
+    private boolean containsSymbol(int x, int y, String symbol) {
         return map[x][y].getChildren().stream()
-                .anyMatch(node -> node instanceof Text && ((Text) node).getText().equals("L"));
+                .anyMatch(node -> node instanceof Text && ((Text) node).getText().equals(symbol));
     }
 
     /**
