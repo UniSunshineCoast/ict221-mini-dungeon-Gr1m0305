@@ -2,12 +2,14 @@ package dungeon.engine;
 
 import javafx.scene.text.Text;
 import java.util.Random;
+import java.util.Scanner;
 
 public class GameEngine {
 
     private final Cell[][] map;
     private final int size;
     private final Random random = new Random();
+    private int difficulty;
 
     /**
      * Predefined wall positions for the maze.
@@ -23,12 +25,15 @@ public class GameEngine {
 
     /**
      * Creates a square game board.
-     *
+     *a
      * @param size the width and height.
      */
     public GameEngine(int size) {
         this.size = size;
         map = new Cell[size][size];
+
+        // Get difficulty input from player
+        getDifficultyFromPlayer();
 
         // Initialize grid with empty cells
         for (int i = 0; i < size; i++) {
@@ -63,6 +68,27 @@ public class GameEngine {
         // Place 2 health potions at random positions
         placeRandomHealthPotions();
 
+        // Place Rangers based on difficulty level
+        placeRandomRangers();
+
+    }
+
+    /**
+     * Gets difficulty input from the player (0-10).
+     */
+    private void getDifficultyFromPlayer() {
+        Scanner scanner = new Scanner(System.in);
+
+        do {
+            System.out.print("Enter difficulty level (0-10): ");
+            while (!scanner.hasNextInt()) {
+                System.out.print("Please enter a valid number (0-10): ");
+                scanner.next();
+            }
+            difficulty = scanner.nextInt();
+        } while (difficulty < 0 || difficulty > 10);
+
+        System.out.println("Difficulty set to: " + difficulty);
     }
 
     /**
@@ -137,7 +163,7 @@ public class GameEngine {
                     !isEntry(mutantX, mutantY)) {
 
                 map[mutantX][mutantY].setStyle("-fx-background-color: rgb(0, 200, 0)");
-                map[mutantX][mutantY].getChildren().add(new Text("m"));
+                map[mutantX][mutantY].getChildren().add(new Text("M"));
                 mutantsPlaced++;
             }
         }
@@ -153,7 +179,7 @@ public class GameEngine {
             int potionX = random.nextInt(size);
             int potionY = random.nextInt(size);
 
-            // Ensure health potions don’t overlap any other object
+            // Ensure health potions don't overlap any other object
             if (!isWall(potionX, potionY) && !isTrap(potionX, potionY) &&
                     !isLadder(potionX, potionY) && !isGold(potionX, potionY) &&
                     !isMutant(potionX, potionY) && !isEntry(potionX, potionY)) {
@@ -163,6 +189,45 @@ public class GameEngine {
                 potionsPlaced++;
             }
         }
+    }
+
+    /**
+     * Places Rangers based on difficulty level in random positions on the grid, avoiding all other objects.
+     */
+    private void placeRandomRangers() {
+        int rangersPlaced = 0;
+
+        while (rangersPlaced < difficulty) {
+            int rangerX = random.nextInt(size);
+            int rangerY = random.nextInt(size);
+
+            // Ensure Rangers don't overlap any other object
+            if (!isWall(rangerX, rangerY) && !isTrap(rangerX, rangerY) &&
+                    !isLadder(rangerX, rangerY) && !isGold(rangerX, rangerY) &&
+                    !isMutant(rangerX, rangerY) && !isEntry(rangerX, rangerY) &&
+                    !isHealthPotion(rangerX, rangerY)) {
+
+                map[rangerX][rangerY].setStyle("-fx-background-color: rgb(0, 200, 0)");
+                map[rangerX][rangerY].getChildren().add(new Text("R"));
+                rangersPlaced++;
+            }
+        }
+    }
+
+    /**
+     * Checks if the given position contains a health potion.
+     */
+    private boolean isHealthPotion(int x, int y) {
+        return containsSymbol(x, y, "H");
+    }
+
+    /**
+     * Gets the current difficulty level.
+     *
+     * @return the difficulty level (0-10)
+     */
+    public int getDifficulty() {
+        return difficulty;
     }
 
     /**
@@ -209,7 +274,7 @@ public class GameEngine {
      * Checks if the given position contains a melee mutant.
      */
     private boolean isMutant(int x, int y) {
-        return containsSymbol(x, y, "m");
+        return containsSymbol(x, y, "M");
     }
 
     /**
