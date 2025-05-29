@@ -12,6 +12,9 @@ public class GameEngine {
     private final int size;
     private final Random random = new Random();
     private int difficulty;
+    private int maxSteps = 100;
+    private int playerHP = 10;
+    private int score = 0;
 
     /**
      * Predefined wall positions for the maze.
@@ -243,6 +246,30 @@ public class GameEngine {
      */
     public int getDifficulty() {
         return difficulty;
+    }
+
+    public int getMaxSteps() {
+        return maxSteps;
+    }
+
+    public int getPlayerHP() {
+        return playerHP;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setMaxSteps(int maxSteps) {
+        this.maxSteps = maxSteps;
+    }
+
+    public void setPlayerHP(int playerHP) {
+        this.playerHP = playerHP;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     /**
