@@ -1,5 +1,7 @@
 package dungeon.engine;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import java.util.Random;
 import java.util.Scanner;
@@ -122,7 +124,20 @@ public class GameEngine {
             // Ensure the trap doesn't spawn on entry, walls, or ladder
             if ((trapX != size - 1 || trapY != 0) && !isWall(trapX, trapY) && !isLadder(trapX, trapY)) {
                 map[trapX][trapY].setStyle("-fx-background-color: rgb(255, 0, 0)");
-                map[trapX][trapY].getChildren().add(new Text("T"));
+
+                try {
+                    Image trapImage = new Image(getClass().getResourceAsStream("/trap_icon.png"));
+                    ImageView trapIcon = new ImageView(trapImage);
+
+                    trapIcon.setFitWidth(20);
+                    trapIcon.setFitHeight(20);
+                    trapIcon.setPreserveRatio(true);
+
+                    map[trapX][trapY].getChildren().add(trapIcon);
+                } catch (Exception e) {
+                    System.err.println("Could not load trap_icon.png: " + e.getMessage());
+                }
+
                 trapsPlaced++;
             }
         }
@@ -205,7 +220,7 @@ public class GameEngine {
             if (!isWall(rangerX, rangerY) && !isTrap(rangerX, rangerY) &&
                     !isLadder(rangerX, rangerY) && !isGold(rangerX, rangerY) &&
                     !isMutant(rangerX, rangerY) && !isEntry(rangerX, rangerY) &&
-                    !isHealthPotion(rangerX, rangerY)) {
+                    !isHealthPotion(rangerX, rangerY) && !isRanger(rangerX, rangerY)) {
 
                 map[rangerX][rangerY].setStyle("-fx-background-color: rgb(0, 200, 0)");
                 map[rangerX][rangerY].getChildren().add(new Text("R"));
@@ -275,6 +290,13 @@ public class GameEngine {
      */
     private boolean isMutant(int x, int y) {
         return containsSymbol(x, y, "M");
+    }
+
+    /**
+     * Checks if the given position contains a ranger mutant.
+     */
+    private boolean isRanger(int x, int y) {
+        return containsSymbol(x, y, "R");
     }
 
     /**
