@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group = 'ict221'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.9.1'
+}
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+application {
+    mainModule = 'dungeon.gui'
+    mainClass = 'dungeon.gui.RunGUI'
+}
+
+javafx {
+    version = '21.0.6'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
+    }
+}
+
+sourceSets.main {
+    java {
+        srcDir 'src/main/java'
+    }
+    resources {
+        // we also look for resources (like *.fxml) in src/main/java
+        srcDirs = ['src/main/java', 'src/main/resources']
+        exclude "**/*.java"
+    }
+}
